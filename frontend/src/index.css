@@ -1,3 +1,88 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+
+.container {
+    display: flex;
+    justify-content: center;
+    margin-top: 180px;
+  }
+  
+  .login-form {
+    width: 400px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-form h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-sizing: border-box;
+  }
+  
+  .login-form button {
+    background-color: #4CAF50;
+    color: white;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  .login-form button:hover {
+    background-color: #45a049;
+  }
+  
+  .login-form a {
+    color: #4CAF50;
+    text-decoration: none;
+  }
+  
+  .login-form a:hover {
+    text-decoration: underline;
+  }
+  
+  .image {
+    width: 30vw;
+    height: 60vh;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .image div {
+    background-color: #ffc107;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    top: 50%;
+    left: 50%;
+  }
+  img {
+    width: 30vw;
+    height: 60vh;
+    overflow: hidden;
+  }
+  .first {
+    text-align: center;
+  }
