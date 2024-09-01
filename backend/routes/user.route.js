@@ -119,6 +119,7 @@ const generateToken = (user) => {
   });
 };
 
+//authentication middlware
 const authenticate = async (req, res) => {
   const { username, password } = req.body;
   const user = User.findOne({
@@ -150,7 +151,7 @@ const authenticate = async (req, res) => {
   });
 };
 
-// Role-based access control middleware
+//middleware for authorization
 const authorization = (roles) => {
   if (typeof roles === "string") {
     roles = [roles];
