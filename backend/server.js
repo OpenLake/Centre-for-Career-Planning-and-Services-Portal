@@ -1,7 +1,7 @@
 //importing all the necessary dependencies
 import express from "express";
 import connectDB from "./config/db.js";
-import router from "./routes/router.js";
+import router from "./routes/route.js";
 
 //dotenv configurations
 import dotenv from "dotenv";

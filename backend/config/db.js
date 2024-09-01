@@ -2,12 +2,10 @@
 import mongoose, { connect } from "mongoose";
 
 //making the connect database function
+const URl=process.env.URL;
 const connectDB = async () => {
   try {
-    await mongoose.connect(
-      //using the mongodb uri
-      "mongodb+srv://openlake:VsEsw0XB9s9a2Clh@webwave2.h1neo.mongodb.net/"
-    );
+    await mongoose.connect(URL);
     console.log("MongoDB database is connected successfully");
   } catch (error) {
     console.log(error);
