@@ -5,7 +5,7 @@ const Login = () => {
     <div className="container">
       <div className="login-form">
         <h1>CCPS</h1>
-        <p className="center">Get jobs here.</p>
+        <p className="first">Centre for Career Planning ans Services </p>
         <form>
           <div className="form-group">
             <label htmlFor="email">Email</label>
@@ -22,7 +22,11 @@ const Login = () => {
         </p>
         <p>Do not have an account yet? <a href="#">Sign Up</a></p>
       </div>
+      <div className="image">
+        <img src="../src/assets/bubble.jpeg" alt="" />
+      </div>
     </div>
+
 
   )
 }
