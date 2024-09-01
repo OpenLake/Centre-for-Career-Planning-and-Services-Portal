@@ -5,9 +5,22 @@
     <link rel="icon" type="image/svg+xml" href="/ccps.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CCPS Portal</title>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <nav class="admin-sidebar">
+        <ul>
+            <li><a href="/admin/dashboard"><i class="icon-dashboard"></i>Dashboard</a></li>
+            <li><a href="/admin/users"><i class="icon-users"></i>Users</a></li>
+            <li><a href="/admin/jobs"><i class="icon-jobs"></i>Jobs</a></li>
+            <li><a href="/admin/applications"><i class="icon-applications"></i>Applications</a></li>
+            <li><a href="/admin/reports"><i class="icon-reports"></i>Reports</a></li>
+            <li><a href="/admin/settings"><i class="icon-settings"></i>Settings</a></li>
+        </ul>
+    </nav>
+    
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
