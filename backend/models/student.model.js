@@ -6,11 +6,10 @@ const studentSchema = new mongoose.Schema({
         required: true
     },
     // job status true if he is seeking off-campus placements
-    Jobstatus:{
-        type: Boolean,
-        required: true,
-        
-    }, 
+    Jobstatus:[{
+        type:mongoose.Schema.Types.ObjectID,
+        ref:'JobPosting'
+    }],
     JobReferenceID:{
         type:mongoose.Schema.Types.ObjectID,
         ref:'JobPosting'
