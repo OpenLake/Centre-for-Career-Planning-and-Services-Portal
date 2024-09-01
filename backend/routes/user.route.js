@@ -112,9 +112,91 @@ const RegisterAPI = async (req, res) => {
   }
 };
 
+//generating the token for the authentication middlware
+const generateToken = (user) => {
+  return jwt.sign({ id: user.id, role: user.role }, "abcde", {
+    expiresIn: "1d",
+  });
+};
+
+const authenticate = async (req, res) => {
+  const { username, password } = req.body;
+  const user = User.findOne({
+    name: username,
+  });
+
+  if (!user) {
+    return res.status(400).json({
+      message: "User with the username is not found",
+      success: false,
+    });
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    return res.status(400).json({
+      message: "Incorrect password is found",
+      success: false,
+    });
+  }
+
+  const token = generateToken(user);
+  return res.status(200).json({
+    message: "User is authenticated",
+    success: true,
+    token: token,
+    expiresIn: "1d",
+  });
+};
+
+// Role-based access control middleware
+const authorization = (roles) => {
+  if (typeof roles === "string") {
+    roles = [roles];
+  }
+
+  return (req, res, next) => {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(400).json({
+        message: "Access Denied since no token is provided",
+        success: false,
+      });
+    }
+
+    try {
+      const decoded = jwt.verify(token, "abcde");
+      if (!roles.length || roles.includes(decoded.role)) {
+        req.user = decoded;
+        next();
+      } else {
+        return res.status(400).json({
+          message: "Access is denied because you dont have the role to access",
+          success: false,
+        });
+      }
+    } catch (error) {
+      return res.status(400).json({
+        message: "Invalid",
+        success: true,
+      });
+    }
+  };
+};
+
 //making the routes
 router.route("/auth/login").post(isAuthenticated, LoginAPI);
 router.route("/auth/register").post(RegisterAPI);
+router
+  .route("/role/dashboard")
+  .get(authorization(["student", "ccps staff"]), (req, res) => {
+    res.status(200).json({
+      message: "Access done",
+      success: true,
+    });
+  });
 
 //exporting the router
 export default router;
