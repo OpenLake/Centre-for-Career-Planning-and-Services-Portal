@@ -1,4 +1,5 @@
 import React from 'react'
+import Profile from '../pages/Profile'
 
 function Sidebar() {
   return (
@@ -13,8 +14,8 @@ function Sidebar() {
                         </a>
                     </li>
                     <li class="mb-4">
-                        <a href="#" class="text-white block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
-                            About
+                        <a href="/Profile" class="text-white block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+                            Profile
                         </a>
                     </li>
                     <li className='mt-[500px]'>
