@@ -76,8 +76,45 @@ const isAuthenticated = async (req, res, next) => {
   }
 };
 
+const RegisterAPI = async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+    if (!name || !email || !password || !role) {
+      return res.status(400).json({
+        message: "Some of the fields are empty",
+        success: false,
+      });
+    }
+    const user = await User.findOne({
+      email: email,
+    });
+    if (user) {
+      return res.status(400).json({
+        message: "User is already registered with this email id",
+        success: false,
+      });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await User.create({
+      name,
+      email,
+      password,
+      role,
+    });
+
+    return res.status(201).json({
+      message: "Account created successfully",
+      success: true,
+      user: user,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 //making the routes
 router.route("/auth/login").post(isAuthenticated, LoginAPI);
+router.route("/auth/register").post(RegisterAPI);
 
 //exporting the router
 export default router;
