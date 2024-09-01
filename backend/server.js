@@ -8,7 +8,7 @@ dotenv.config({});
 const app = express();
 
 //port
-const port = process.env.PORT || 5000;
+const port = 3000;
 
 //apis
 app.use("/api", router);
@@ -16,5 +16,5 @@ app.use("/api", router);
 //listener
 app.listen(port, () => {
   connectDB();
-  console.log(`Server is running at the port ${port}`);
+  console.log("Server is running at the port 3000");
 });

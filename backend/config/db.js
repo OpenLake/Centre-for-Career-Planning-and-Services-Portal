@@ -2,7 +2,9 @@ import mongoose, { connect } from "mongoose";
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(
+      "mongodb+srv://openlake:VsEsw0XB9s9a2Clh@webwave2.h1neo.mongodb.net/"
+    );
     console.log("MongoDB database is connected successfully");
   } catch (error) {
     console.log(error);
@@ -11,5 +13,5 @@ const connectDB = async () => {
 
 export default connectDB;
 
-//push 
+//push
 //
