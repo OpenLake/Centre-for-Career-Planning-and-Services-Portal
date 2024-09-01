@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="styles.css"> <!-- Assuming a linked CSS file -->
+  <style>
+    div[class$="caps"] {
+      color: black;
+      font-size: 25.32px;
+    }
+
+    body {
+      display: flex;
+      flex-direction: row;
+      gap: 20px; /* Optional spacing between sections */
+      padding: 20px;
+      margin: 0;
+      font-family: sans-serif;
+      box-sizing: border-box; /* Ensures padding and border are included in width calculations */
+    }
+
+    .box {
+      border: solid 2px #e4e4ed;
+      border-radius: 10px;
+      box-sizing: border-box; /* Keep elements within their specified width */
+    }
+
+    .sdbar {
+      width: 20%; /* Set to 20% to maintain the ratio */
+      background-color: rgba(217, 217, 217, 1);
+    }
+
+    .mid {
+      width: 60%; /* Set to 60% to maintain the ratio */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .end {
+      width: 20%; /* Set to 20% to maintain the ratio */
+      display: flex;
+      flex-direction: column;
+      margin: 0px;
+    }
+
+    .top {
+      display: flex;
+      flex-wrap: wrap; /* Allow items to wrap within the container */
+      margin: 10px;
+      gap: 10px; /* Space between items */
+      justify-content: space-between; /* Distribute space between items */
+      overflow: hidden; /* Prevent overflow */
+    }
+
+    .top div {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 60px; /* Adjust width */
+      height: auto; /* Let height adjust based on content */
+      background-size: contain; /* Maintain aspect ratio */
+      background-repeat: no-repeat;
+      background-position: center; /* Center the background image */
+      overflow: hidden; /* Ensure contents do not overflow */
+      flex-shrink: 1; /* Allow items to shrink if needed */
+    }
+
+    .top div > div {
+
+      width: 100%;
+      height: 60px; /* Set consistent size for images */
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    .tk {
+      background-image: url("./Tick.png");
+      background-repeat: no-repeat;
+      height: 70px;
+      object-fit: contain;
+      width: 70px;
+      margin: 10px;
+      padding: 10px 10px;
+    }
+
+    .a,
+    .b {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 30px;
+      padding: 20px;
+    }
+
+    div {
+      font-family: "Roboto", sans-serif;
+    }
+
+    h1 {
+      padding: 10px;
+      font-family: "Inter", sans-serif;
+    }
+
+    button {
+      font-family: "Lato", sans-serif;
+      border: 0px;
+      color: white;
+      font-weight: bold;
+      background-color: rgba(0, 97, 255, 1);
+      width: 200px;
+      border-radius: 30px;
+      height: 50px;
+      margin: 10px;
+    }
+
+    .txt {
+      color: rgba(104, 103, 129, 1);
+    }
+
+    button[class$="white"] {
+      background-color: white;
+      color: black;
+      font-weight: bold;
+      border: solid 1px black;
+    }
+
+    button[class$="circle"] {
+      border: none;
+      background-color: blue;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      margin: 0 5px;
+    }
+
+    .sdbx {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%; /* Make it fill the parent width */
+      padding: 10px;
+      background: #F3F3F3;
+      margin: 5px 0;
+    }
+
+    .sdbx .name {
+      flex-grow: 1; /* Allow the name to take up available space */
+      margin-right: 10px; /* Add some space between the name and the buttons */
+    }
+
+    .s {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+    }
+    #m{
+      margin: 1px 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sdbar box" style="display: flex;align-items: center;justify-content: center;">Sidebar</div>
+  <div class="mid box">
+    <h1>Backend Software Engineer</h1>
+    <div class="top box" style="background-size:contain;justify-content: space-around;padding: 20px;">
+      <div id="m">
+        <div style="background-image: url('./Div [card-job-post-category-title-wrapper].png');"></div>xyz
+      </div>
+      <div id="m">
+        <div style="background-image: url('./Div [card-job-post-category-title-wrapper] (1).png');"></div>xyz
+      </div>
+      <div id="m">
+        <div style="background-image: url('/Div [card-job-post-category-title-wrapper] (2).png');"></div>xyz
+      </div>
+      <div id="m">
+        <div style="background-image: url('./Div [card-job-post-category-title-wrapper] (3).png');"></div>xyz
+      </div>
+      <div>
+        <div style="background-image: url('./Div [card-job-post-category-title-wrapper] (4).png');"></div>xyz
+      </div>
+    </div>
+    <hr style="border-top: 1px dotted black;">
+    <div class="txt" style="padding: 50px;">
+      <div class="caps">Heading</div>
+      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fuga similique adipisci, dolorem doloremque itaque autem nemo earum error ad nisi labore dicta quasi perferendis quidem consectetur hic optio esse aut!
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam ipsa voluptas facilis reiciendis. Quae consectetur dolores veritatis magni laborum voluptates, nemo placeat vel id, corporis officiis excepturi perferendis fugiat ducimus?
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam exercitationem corrupti earum incidunt molestiae illo amet inventore voluptas quidem nisi blanditiis officia doloribus, tempore mollitia quam est magni velit quibusdam!
+    </div>
+    <div class="txt" style="padding:50px;">
+      <div class="caps">Heading</div>
+      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fuga similique adipisci, dolorem doloremque itaque autem nemo earum error ad nisi labore dicta quasi perferendis quidem consectetur hic optio esse aut!
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Esse aperiam quis voluptates quisquam, neque atque doloribus omnis ab beatae reiciendis, cumque laborum. Maiores porro laudantium sint laboriosam, autem id unde?
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi culpa molestiae reiciendis? Quasi ipsum eligendi at autem, velit explicabo est dolorem corrupti atque aperiam quibusdam, unde nostrum eveniet? Sequi, iure.
+    </div>
+    <div class="txt" style="padding:50px;">
+      <div class="caps">Heading</div>
+      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fuga similique adipisci, dolorem doloremque itaque autem nemo earum error ad nisi labore dicta quasi perferendis quidem consectetur hic optio esse aut!
+      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Accusantium, excepturi. Incidunt, sit? Beatae iusto quasi sunt! Dolores quia dolorum dicta voluptas ullam ut dolorem odit, delectus reprehenderit! Blanditiis, odit quibusdam.
+      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quos iste iusto dolorem illum architecto! Amet nesciunt quisquam iste reprehenderit, officiis blanditiis molestiae neque, quia sed voluptates dolor obcaecati quae sapiente!
+    </div>
+    <button>Apply</button>
+  </div>
+  <div class="end">
+    <div class="a box">
+      <div class="tk"></div>
+      <div class="txt">
+        <div class="caps">Apply now</div>
+        Please let Webflow know that you found this position on our job board, as that is a great way to support us, so we can keep posting cool jobs every day
+      </div>
+      <br>
+      <br>
+      <button>Apply now</button><br>
+      <button class="white">Save Now</button>
+    </div>
+    <div class="b box">
+      <div class="tk"></div>
+      <div class="txt">
+        <div class="caps">Our Alumni At Company</div>
+        <div class="sdbx">
+          <span class="name">Name</span>
+          <button class="circle"></button>
+          <button class="circle"></button>
+          <button class="circle"></button>
+          <button class="circle"></button>
+        </div>
+        <div class="sdbx">
+          <span class="name">Name</span>
+          <button class="circle"></button>
+          <button class="circle"></button>
+          <button class="circle"></button>
+          <button class="circle"></button>
+        </div>
+        <div class="sdbx">
+          <span class="name">Name</span>
+          <button class="circle"></button>
+          <button class="circle"></button>
+          <button class="circle"></button>
+          <button class="circle"></button>
+        </div>
+      </div>
+      <button class="white">View More</button>
+    </div>
+  </div>
+</body>
+</html>
