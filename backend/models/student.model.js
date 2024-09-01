@@ -7,9 +7,15 @@ const studentSchema = new mongoose.Schema({
     },
     // job status true if he is seeking off-campus placements
     Jobstatus:[{
+        JobRerenceID:{
         type:mongoose.Schema.Types.ObjectID,
         ref:'JobPosting'
-    }],
+        
+    },
+    ApplicationStatus:{enum:["applied","in-review","rejected","accepted"]},
+}
+],
+    
     JobReferenceID:{
         type:mongoose.Schema.Types.ObjectID,
         ref:'JobPosting'
