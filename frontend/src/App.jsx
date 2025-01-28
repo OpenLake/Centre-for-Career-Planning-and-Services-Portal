@@ -4,21 +4,23 @@ import './index.css'; // Ensure Tailwind CSS is imported
 import SignInForm from './components/SignInForm';
 import Navbar from './components/Navbar';
 import SavedApplications from './pages/Savedapplications';
-import { Route } from 'react-router-dom';
+import { Route, Routes ,BrowserRouter } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
+import Applications from './pages/Applications';
 
 function App() {
   return (
-    // <Routes>
-    //   <Route path='/' element={<Sidebar/>}></Route>
-    //   <Route path='/saved-applications' element={<SavedApplications/>}></Route>
-    // </Routes>
+    
+    
     <div>
-      <SavedApplications/>
-      {/* <Navbar/>
-     <SignInForm />
-      <Footer /> */}
-    </div>
+    <Routes>
+   
+      <Route path="/applications" element={<Applications />} />
+      <Route path="/saved-applications" element={<SavedApplications />} />
+      {/* You can add other routes here */}
+    </Routes>
+  </div>
+ 
   );
 }
 
