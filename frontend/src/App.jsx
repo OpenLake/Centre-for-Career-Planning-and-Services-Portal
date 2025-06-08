@@ -19,6 +19,7 @@ import ForgotPassword from './components/ForgotPassword';
 import VerifyEmail from './components/VerifyEmail';
 import DiscussionForum from './pages/DiscussionForum';
 import AddThread from './components/AddThread';
+import Profile from './pages/Profile';
 
 function App() {
   const { authUser } = useAuthContext();
@@ -33,6 +34,7 @@ function App() {
       
       <Routes>
         <Route path='/' element={authUser ? <Home /> : <Navigate to='/login' />} />
+        <Route path='/profile' element={authUser ? <Profile /> : <Navigate to='/login' />} />
         <Route path='/discussion-forum' element={authUser ? <DiscussionForum /> : <Navigate to='/login' />} />
         <Route path='/dashboard' element={authUser ? <Dashboard /> : <Navigate to='/login' />} />
         <Route path='/login' element={authUser ? <Navigate to='/' /> : <Login/>}/>

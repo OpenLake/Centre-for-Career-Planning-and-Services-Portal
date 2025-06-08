@@ -10,7 +10,7 @@ const AllLinks = [
   { name: 'Applications',   link: '/applications',    user: 'all'     },
   { name: 'Saved Apps',     link: '/saved-applications', user: 'all'   },
   { name: 'Analytics',      link: '/analytics',       user: 'all'     },
-  { name: 'Referrals',      link: '/referals',        user: 'all'     },
+  { name: 'Referrals',      link: '/referrals',        user: 'all'     },
   { name: 'Resume Builder', link: '/resumebuilder',   user: 'student' },
 ];
 
