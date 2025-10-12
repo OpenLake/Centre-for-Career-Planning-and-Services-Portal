@@ -1,10 +1,10 @@
 import { toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
 // Ensure fetchAppliedJobs is imported from your API service file
-import { fetchJobs, fetchMyApplications, fetchAppliedJobs } from "../../api/useApply"; 
+import { fetchJobs, fetchMyApplications, fetchAppliedJobs } from "../../api/useApply";
 import Sidebar from "../../components/Sidebar";
 import ApplyModal from "../../components/ApplyModel";
-import { saveJob } from "../../api/useSavedJobs";
+import { saveJob, fetchSavedApplications, unsaveJob } from "../../api/useSavedJobs";
 
 import JobCard from "../../components/JobCard";
 
@@ -22,6 +22,7 @@ const Applications = () => {
   const [jobs, setJobs] = useState([]);
   const [myApps, setMyApps] = useState([]);
   const [appliedJobsList, setAppliedJobsList] = useState([]); // NEW STATE
+  const [savedJobslist, setSavedJobslist] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
@@ -34,18 +35,21 @@ const Applications = () => {
 
 
   const loadAll = async () => {
+    setLoading(true);
     try {
-      const [jobList, { onCampus, offCampus }, dedicatedAppliedList] = await Promise.all([
+      const [jobList, { onCampus, offCampus }, dedicatedAppliedList, savedlist, profileData] = await Promise.all([
         fetchJobs(),
         fetchMyApplications(),
 
         fetchAppliedJobs(), // Fetch dedicated applied list
-
+        fetchSavedApplications(),
         fetchProfile(),
       ]);
       setJobs(jobList);
       setMyApps([...onCampus, ...offCampus]);
       setAppliedJobsList(dedicatedAppliedList); // Set new state
+      setSavedJobslist(savedlist,);
+      setProfile(profileData);
     } catch (err) {
       console.error(err);
       toast.error("Failed to load jobs/applications");
@@ -54,23 +58,16 @@ const Applications = () => {
     }
   };
 
-  const fetchProfile = () => {
-    if (!authUser?._id) return;
+  const fetchProfile = async () => {
+    if (!authUser?._id) return { resumeUrl: authUser.resumeUrl, phone: authUser.phone, address: authUser.address };
     setLoading(true);
-    getStudentProfile(authUser._id)
-      .then((data) => {
-        setProfile({ ...userData, ...data });
-      })
-      .catch(() => {
-        setProfile((prev) => ({
-          ...prev,
-          resumeUrl: authUser.resumeUrl,
-          phone: authUser.phone,
-          address: authUser.address,
-        }));
-      }).finally(() => setLoading(false));
-    };
-
+    try {
+      const data = await getStudentProfile(authUser._id);
+      setProfile({ ...userData, ...data });
+    } catch (err) {
+      return { resumeUrl: authUser.resumeUrl, phone: authUser.phone, address: authUser.address };
+    }
+  };//now this function returns a promise
   useEffect(() => {
     loadAll();
   }, []);
@@ -99,13 +96,33 @@ const Applications = () => {
     try {
       const token = localStorage.getItem("ccps-token");
       await saveJob(jobId, token);
-      toast.success("Job saved!");
+      const updatedSavedList = await fetchSavedApplications();
+      setSavedJobslist(updatedSavedList);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to save job.");
+      throw err;
     }
   };
+  const handleUnsaveJob = async (jobId) => {
+    try {
+      const token = localStorage.getItem("ccps-token");
+      const savedItem = savedJobslist.find(item => item.jobId?._id === jobId);
 
+      if (!savedItem) {
+        console.error("Saved item not found for jobId:", jobId);
+        throw new Error("Saved job not found");
+      }
+
+      console.log("Unsaving with saved item ID:", savedItem._id);  // Debug log
+      await unsaveJob(savedItem._id, token);
+
+      const updatedSavedList = await fetchSavedApplications();
+      setSavedJobslist(updatedSavedList);
+    } catch (error) {
+      console.error("Error in unsaving the job:", error);
+      throw error;
+    }
+  };
   const filteredJobs = jobs.filter((job) =>
     job.jobTitle.toLowerCase().includes(search.toLowerCase())
   );
@@ -146,6 +163,8 @@ const Applications = () => {
             myApps={myApps}
             openApplyModal={openApplyModal}
             handleSaveJob={handleSaveJob}
+            handleUnsaveJob={handleUnsaveJob}
+            savedJobslist={savedJobslist}
           />
         ))}
       </div>
@@ -171,26 +190,24 @@ const Applications = () => {
     <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <Sidebar />
       <main className="flex-1 pt-20 md:pt-8 px-4 sm:px-6 lg:px-8 w-full">
-        
+
         {/* Tab Navigation */}
         <div className="flex gap-4 mb-8 border-b border-gray-200">
           <button
             onClick={() => setActiveTab("jobs")}
-            className={`pb-2 px-3 font-semibold ${
-              activeTab === "jobs"
-                ? "text-[#13665b] border-b-2 border-[#13665b]"
-                : "text-gray-500"
-            }`}
+            className={`pb-2 px-3 font-semibold ${activeTab === "jobs"
+              ? "text-[#13665b] border-b-2 border-[#13665b]"
+              : "text-gray-500"
+              }`}
           >
             Job Opportunities
           </button>
           <button
             onClick={() => setActiveTab("applied")}
-            className={`pb-2 px-3 font-semibold ${
-              activeTab === "applied"
-                ? "text-[#13665b] border-b-2 border-[#13665b]"
-                : "text-gray-500"
-            }`}
+            className={`pb-2 px-3 font-semibold ${activeTab === "applied"
+              ? "text-[#13665b] border-b-2 border-[#13665b]"
+              : "text-gray-500"
+              }`}
           >
             My Applied Jobs
           </button>
@@ -221,16 +238,16 @@ const Applications = () => {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {appliedJobsList.map((job) => (
-                    <JobCard 
-                      key={job._id} 
-                      job={{ 
-                        ...job, 
-                        status: job.applicationStatus || 'Pending', 
+                    <JobCard
+                      key={job._id}
+                      job={{
+                        ...job,
+                        status: job.applicationStatus || 'Pending',
                         applied: true,
                         Type: job.Type || 'Off-Campus' // Default type if missing
-                      }} 
+                      }}
                       myApps={appliedJobsList} // Pass the dedicated list for status check
-                      isAppliedJob={true}   
+                      isAppliedJob={true}
                     />
                   ))}
                 </div>
