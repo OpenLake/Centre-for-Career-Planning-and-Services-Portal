@@ -33,27 +33,15 @@ export const unsaveJob = async (req, res) => {
   try {
     const { jobId } = req.params;
     const userId = req.userId; // set by protectRoute
-
-    // Check if job exists
-    const job = await JobPosting.findById(jobId);
-    if (!job) {
-      return res.status(404).json({ message: "Job not found." });
+    const deleteSavedJob=await SavedJob.findOneAndDelete({
+      _id:jobId,
+      userId:userId
+    });
+    if(!deleteSavedJob){
+      return res.status(404).json({message:"Saved job not found."});
     }
-
-    // Remove jobId from SavedJobs
-    const updatedStudent = await Student.findOneAndUpdate(
-      { user: userId },
-      { $pull: { SavedJobs: jobId } },
-      { new: true }
-    );
-
-    if (!updatedStudent) {
-      return res.status(404).json({ message: "Student not found or not authorized." });
-    }
-
     return res.status(200).json({
-      message: "Job unsaved successfully.",
-      savedJobs: updatedStudent.SavedJobs,
+      message:"Job unsaved successfully",
     });
   } catch (error) {
     console.error("Unsave job error:", error);
