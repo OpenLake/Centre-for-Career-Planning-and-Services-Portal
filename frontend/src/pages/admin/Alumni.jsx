@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import useAlumniAdmin from "../../api/alumni/useAlumniAdmin";
 import Sidebar from "../../components/Sidebar";
+import useGetAllAlumni from "../../api/alumni/useGetAllAlumni";
+
 
 const initialForm = {
   name: "",
@@ -19,6 +21,9 @@ const initialForm = {
 const AdminAlumniPage = () => {
   const navigate = useNavigate();
   const { addAlumni, updateAlumni, deleteAlumni, alumni, refetch } = useAlumniAdmin();
+  const { alumni: allAlumni, loading, refetch: refetchAll } = useGetAllAlumni();
+
+
 
   const [searchId, setSearchId] = useState("");
   const [form, setForm] = useState(initialForm);
@@ -74,6 +79,7 @@ const AdminAlumniPage = () => {
         toast.success("Alumni added successfully");
       }
       refetch();
+      refetchAll();
       resetForm();
     } catch (err) {
       console.error(err);
@@ -88,8 +94,9 @@ const AdminAlumniPage = () => {
       try {
         await deleteAlumni(editingId, token);
         toast.success("Alumni deleted");
-        resetForm();
+         resetForm();
         refetch();
+        refetchAll();
       } catch (error) {
         toast.error("Failed to delete alumni");
       }
@@ -106,7 +113,8 @@ const AdminAlumniPage = () => {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
-      <main className="flex-grow bg-gray-100 py-10 px-6 md:px-12">
+      <main className="flex-grow bg-gray-100 py-10 px-6 md:px-12 overflow-y-auto">
+
         <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-lg p-10 md:p-12">
           <h1 className="text-4xl font-bold text-gray-900 text-center mb-10">
             {isEditMode ? "Edit Alumni" : "Add New Alumni"}
@@ -323,6 +331,62 @@ const AdminAlumniPage = () => {
             </div>
           </form>
         </div>
+        {/* Alumni Management Table */}
+<section className="mt-14">
+  <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+    Alumni Management
+  </h2>
+
+  {loading ? (
+    <p className="text-center text-gray-600">Loading alumni...</p>
+  ) : (
+    <div className="overflow-x-auto">
+      <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden">
+        <thead className="bg-blue-600 text-white">
+          <tr>
+            <th className="px-4 py-3 text-left">Name</th>
+            <th className="px-4 py-3 text-left">Batch</th>
+            <th className="px-4 py-3 text-left">Email</th>
+            <th className="px-4 py-3 text-center">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody className="bg-white divide-y">
+          {allAlumni.length === 0 ? (
+            <tr>
+              <td colSpan="4" className="text-center py-6 text-gray-500">
+                No alumni records found
+              </td>
+            </tr>
+          ) : (
+            allAlumni.map((alum) => (
+              <tr key={alum._id} className="hover:bg-gray-50 transition">
+                <td className="px-4 py-3">{alum.name}</td>
+                <td className="px-4 py-3">{alum.batch}</td>
+                <td className="px-4 py-3">{alum.Email}</td>
+                <td className="px-4 py-3 text-center space-x-3">
+                  <button
+                    className="text-blue-600 hover:underline font-medium"
+                    disabled
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="text-red-600 hover:underline font-medium"
+                    disabled
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  )}
+</section>
+
       </main>
     </div>
   );

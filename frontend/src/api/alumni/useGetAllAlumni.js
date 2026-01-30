@@ -27,7 +27,8 @@ const useGetAllAlumni = () => {
     fetchAllAlumni(); // fetch on mount
   }, []);
 
-  return { alumni, loading };
+  return { alumni, loading, refetch: fetchAllAlumni };
+
 };
 
 export default useGetAllAlumni;
