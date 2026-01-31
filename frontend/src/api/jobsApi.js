@@ -10,13 +10,13 @@ const BASE_URL = BACKEND_ROOT.endsWith('/api')
 
 // 🟢 CRITICAL FIX: Define the specific resource endpoint.
 // Assuming your Express app uses: app.use('/api/jobs', jobRoutes)
-const JOBS_ENDPOINT = `${BASE_URL}/jobs`; 
+const JOBS_ENDPOINT = `${BASE_URL}/jobs`;
 
 
-export { JOBS_ENDPOINT }; 
+export { JOBS_ENDPOINT };
 
 export const updateJobPosting = async (jobId, jobData, token) => {
-    const response = await fetch(`${JOBS_ENDPOINT}/${jobId}`, { 
+    const response = await fetch(`${JOBS_ENDPOINT}/${jobId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -27,9 +27,9 @@ export const updateJobPosting = async (jobId, jobData, token) => {
 
     // Check for 204 No Content response
     if (response.status === 204 || response.headers.get('content-length') === '0') {
-        return { _id: jobId }; 
+        return { _id: jobId };
     }
-    
+
     if (!response.ok) {
         try {
             const errorData = await response.json();
@@ -40,8 +40,8 @@ export const updateJobPosting = async (jobId, jobData, token) => {
     }
 
     const data = await response.json();
-    
-    return data.job; 
+
+    return data.job;
 };
 
 /**
@@ -51,12 +51,12 @@ export const updateJobPosting = async (jobId, jobData, token) => {
  */
 export const fetchJobs = async (token) => {
     // 🔑 Fix: Use the correct, full endpoint: /api/jobs
-    const response = await fetch(JOBS_ENDPOINT, { 
+    const response = await fetch(JOBS_ENDPOINT, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             // Crucial: Pass the authentication token
-            'Authorization': `Bearer ${token}`, 
+            'Authorization': `Bearer ${token}`,
         },
     });
 
@@ -84,7 +84,7 @@ export const deleteJob = async (jobId, token) => {
         headers: {
             'Content-Type': 'application/json',
             // Crucial: Pass the authentication token
-            'Authorization': `Bearer ${token}`, 
+            'Authorization': `Bearer ${token}`,
         },
     });
     if (!response.ok) {
@@ -118,4 +118,24 @@ export const createJobPosting = async (jobData, token) => {
     }
 
     return response.json();
+};
+
+// Fetch single job by ID
+export const fetchJobById = async (id, token) => {
+    try {
+        const response = await fetch(`${JOBS_ENDPOINT}/${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to fetch job details');
+        }
+        return data.job;
+    } catch (error) {
+        throw error;
+    }
 };
