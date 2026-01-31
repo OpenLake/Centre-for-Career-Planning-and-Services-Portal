@@ -101,7 +101,7 @@ export const jobDelete = async (req, res) => {
 export const jobList = async (req, res) => {
     try {
         const jobPostings = await JobPosting.aggregate([{
-            $lookup:{
+            $lookup: {
                 from: "jobapplications",
                 localField: "_id",
                 foreignField: "jobId",
@@ -221,3 +221,32 @@ export const jobRelevanceScoreDownvote = async (req, res) => {
     }
 };
 
+// Get a single job by ID with application count
+export const jobGetById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const job = await JobPosting.findById(id);
+
+        if (!job) {
+            return res.status(404).json({ message: 'Job posting not found' });
+        }
+
+        // Get application count
+        const applicationCount = await mongoose.connection.db.collection('jobapplications').countDocuments({ jobId: new mongoose.Types.ObjectId(id) });
+
+        // Convert to object and add application count
+        const jobWithCount = job.toObject();
+        jobWithCount.applicationCount = applicationCount;
+
+        res.status(200).json({
+            message: 'Job details retrieved successfully',
+            job: jobWithCount
+        });
+    } catch (error) {
+        console.error("Error in jobGetById:", error);
+        res.status(500).json({
+            message: 'Error retrieving job details',
+            error: error.message
+        });
+    }
+};

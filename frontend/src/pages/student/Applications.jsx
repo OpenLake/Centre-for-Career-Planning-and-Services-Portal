@@ -1,12 +1,14 @@
 import { toast } from "react-hot-toast";
 import { useEffect, useState } from "react";
 // Ensure fetchAppliedJobs is imported from your API service file
-import { fetchJobs, fetchMyApplications, fetchAppliedJobs } from "../../api/useApply"; 
+import { fetchJobs, fetchMyApplications, fetchAppliedJobs } from "../../api/useApply";
 import Sidebar from "../../components/Sidebar";
 import ApplyModal from "../../components/ApplyModel";
 import { saveJob } from "../../api/useSavedJobs";
 
 import JobCard from "../../components/JobCard";
+
+import JobDetailsModal from "../../components/JobDetailsModal"; // Import Modal
 
 import { useAuthContext } from "../../context/AuthContext";
 import { getStudentProfile } from "../../api/profile/useStudentProfile";
@@ -25,6 +27,7 @@ const Applications = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [selectedJobDetails, setSelectedJobDetails] = useState(null); // State for details modal
   const [search, setSearch] = useState("");
 
   const [activeTab, setActiveTab] = useState("jobs"); // <-- NEW STATE for tab
@@ -69,7 +72,7 @@ const Applications = () => {
           address: authUser.address,
         }));
       }).finally(() => setLoading(false));
-    };
+  };
 
   useEffect(() => {
     loadAll();
@@ -144,7 +147,7 @@ const Applications = () => {
             key={job._id}
             job={job}
             myApps={myApps}
-            openApplyModal={openApplyModal}
+            openApplyModal={setSelectedJobDetails}
             handleSaveJob={handleSaveJob}
           />
         ))}
@@ -171,26 +174,24 @@ const Applications = () => {
     <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <Sidebar />
       <main className="flex-1 pt-20 md:pt-8 px-4 sm:px-6 lg:px-8 w-full">
-        
+
         {/* Tab Navigation */}
         <div className="flex gap-4 mb-8 border-b border-gray-200">
           <button
             onClick={() => setActiveTab("jobs")}
-            className={`pb-2 px-3 font-semibold ${
-              activeTab === "jobs"
-                ? "text-[#13665b] border-b-2 border-[#13665b]"
-                : "text-gray-500"
-            }`}
+            className={`pb-2 px-3 font-semibold ${activeTab === "jobs"
+              ? "text-[#13665b] border-b-2 border-[#13665b]"
+              : "text-gray-500"
+              }`}
           >
             Job Opportunities
           </button>
           <button
             onClick={() => setActiveTab("applied")}
-            className={`pb-2 px-3 font-semibold ${
-              activeTab === "applied"
-                ? "text-[#13665b] border-b-2 border-[#13665b]"
-                : "text-gray-500"
-            }`}
+            className={`pb-2 px-3 font-semibold ${activeTab === "applied"
+              ? "text-[#13665b] border-b-2 border-[#13665b]"
+              : "text-gray-500"
+              }`}
           >
             My Applied Jobs
           </button>
@@ -221,16 +222,16 @@ const Applications = () => {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {appliedJobsList.map((job) => (
-                    <JobCard 
-                      key={job._id} 
-                      job={{ 
-                        ...job, 
-                        status: job.applicationStatus || 'Pending', 
+                    <JobCard
+                      key={job._id}
+                      job={{
+                        ...job,
+                        status: job.applicationStatus || 'Pending',
                         applied: true,
                         Type: job.Type || 'Off-Campus' // Default type if missing
-                      }} 
+                      }}
                       myApps={appliedJobsList} // Pass the dedicated list for status check
-                      isAppliedJob={true}   
+                      isAppliedJob={true}
                     />
                   ))}
                 </div>
@@ -424,6 +425,18 @@ const Applications = () => {
           userProfile={profile}
           onClose={() => setIsModalOpen(false)}
           onApplied={handleApplied}
+        />
+      )}
+
+      {/* Job Details Modal */}
+      {selectedJobDetails && (
+        <JobDetailsModal
+          jobId={selectedJobDetails._id}
+          onClose={() => setSelectedJobDetails(null)}
+          openApplyModal={() => {
+            setSelectedJobDetails(null);
+            openApplyModal(selectedJobDetails);
+          }}
         />
       )}
     </div>

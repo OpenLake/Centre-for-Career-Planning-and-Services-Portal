@@ -8,7 +8,17 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("ccps-token");
+  let token = localStorage.getItem("ccps-token");
+  if (!token) {
+    const userString = localStorage.getItem('ccps-user');
+    if (userString) {
+      try {
+        const user = JSON.parse(userString);
+        token = user.token || user.accessToken || null;
+      } catch (e) { }
+    }
+  }
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -22,5 +32,5 @@ export const saveJob = async (jobId) => {
 
 export const fetchSavedApplications = async () => {
   const res = await api.get("/api/saved-jobs/saved");
-  return res.data.savedJobs; 
+  return res.data.savedJobs;
 };

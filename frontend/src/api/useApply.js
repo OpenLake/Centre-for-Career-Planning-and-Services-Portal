@@ -5,8 +5,22 @@ const axiosInstance = axios.create({
   baseURL: BASE_URL,
 });
 
+const getAuthToken = () => {
+  let token = localStorage.getItem('ccps-token');
+  if (!token) {
+    const userString = localStorage.getItem('ccps-user');
+    if (userString) {
+      try {
+        const user = JSON.parse(userString);
+        token = user.token || user.accessToken || null;
+      } catch (e) { }
+    }
+  }
+  return token;
+};
+
 export const fetchJobs = async () => {
-  const token = localStorage.getItem('ccps-token'); // Retrieve token
+  const token = getAuthToken(); // Retrieve token robustly
   const headers = {};
   if (token) {
     // Conditionally add the Authorization header if a token exists
@@ -15,8 +29,8 @@ export const fetchJobs = async () => {
 
   try {
     // Pass headers to the GET request
-    const res = await axiosInstance.get('/api/jobs', { headers }); 
-    
+    const res = await axiosInstance.get('/api/jobs', { headers });
+
     // Check if the response data is an array directly, or if it's nested (e.g., res.data.jobs)
     const jobs = Array.isArray(res.data) ? res.data : res.data.jobs || [];
     console.log('Fetched Jobs Data:', jobs);
@@ -29,7 +43,7 @@ export const fetchJobs = async () => {
 };
 
 export const fetchMyApplications = async () => {
-  const token = localStorage.getItem('ccps-token');
+  const token = getAuthToken();
   if (!token) {
     return { onCampus: [], offCampus: [] };
   }
@@ -40,9 +54,9 @@ export const fetchMyApplications = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
-    
+
     // The backend controller returns onCampusApplications and offCampusApplications
-    return { 
+    return {
       onCampus: res.data.onCampusApplications || [],
       offCampus: res.data.offCampusApplications || [],
     };
@@ -53,7 +67,7 @@ export const fetchMyApplications = async () => {
 };
 
 export const fetchAppliedJobs = async () => {
-  const token = localStorage.getItem("ccps-token");
+  const token = getAuthToken();
   try {
     // This route is correctly mapped on the backend: /api/applications/applied-jobs
     const res = await axiosInstance.get('/api/applications/applied-jobs', {
@@ -70,7 +84,7 @@ export const fetchAppliedJobs = async () => {
 };
 
 export const applyToJob = async (jobData) => {
-  const token = localStorage.getItem("ccps-token");
+  const token = getAuthToken();
   try {
     // FIX: Changed '/api/applications' to '/api/applications/apply'
     const res = await axiosInstance.post('/api/applications', jobData, {
@@ -86,7 +100,7 @@ export const applyToJob = async (jobData) => {
 };
 
 export const fetchApplicants = async (jobId) => {
-  const token = localStorage.getItem("ccps-token");
+  const token = getAuthToken();
   try {
     // NOTE: Backend route is /api/applications/job/:jobId/applicants. Frontend call is correct.
     const res = await axiosInstance.get(`/api/applications/job/${jobId}/applicants`, {
@@ -103,7 +117,7 @@ export const fetchApplicants = async (jobId) => {
 };
 
 export const updateApplicationStatus = async (id, status) => {
-  const token = localStorage.getItem("ccps-token");
+  const token = getAuthToken();
   // NOTE: The backend routes you provided do not show a route for updating status.
   // Assuming the correct path is /api/applications/status/:id
   await axiosInstance.put(`/api/applications/status/${id}`, { status }, {
