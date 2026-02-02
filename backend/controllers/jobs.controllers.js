@@ -140,6 +140,11 @@ export const jobRelevanceScoreUpvote = async (req, res) => {
             return res.status(404).json({ message: 'Job posting not found' });
         }
 
+        // Initialize fields if missing
+        jobPosting.relevanceScore = jobPosting.relevanceScore || 0;
+        jobPosting.upvotedBy = jobPosting.upvotedBy || [];
+        jobPosting.downvotedBy = jobPosting.downvotedBy || [];
+
         if (jobPosting.upvotedBy.includes(userId)) {
             return res.status(400).json({ message: 'Already upvoted' });
         }
@@ -187,6 +192,11 @@ export const jobRelevanceScoreDownvote = async (req, res) => {
         if (!jobPosting) {
             return res.status(404).json({ message: 'Job posting not found' });
         }
+
+        // Initialize fields if missing
+        jobPosting.relevanceScore = jobPosting.relevanceScore || 0;
+        jobPosting.upvotedBy = jobPosting.upvotedBy || [];
+        jobPosting.downvotedBy = jobPosting.downvotedBy || [];
 
         if (jobPosting.downvotedBy.includes(userId)) {
             return res.status(400).json({ message: 'Already downvoted' });

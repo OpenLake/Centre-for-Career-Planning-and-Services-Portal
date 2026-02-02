@@ -8,7 +8,7 @@ router.post("/", protectRoute, authorizeRoles("admin"), jobCreate);
 router.put("/:id", protectRoute, authorizeRoles("admin"), jobUpdate);
 router.delete("/:id", protectRoute, authorizeRoles("admin"), jobDelete);
 router.get('/', protectRoute, jobList);
-router.get('/upvote/:id', protectRoute, jobRelevanceScoreUpvote);
-router.get('/downvote/:id', protectRoute, jobRelevanceScoreDownvote);
+router.post('/upvote/:id', protectRoute, jobRelevanceScoreUpvote);
+router.post('/downvote/:id', protectRoute, jobRelevanceScoreDownvote);
 
 export default router;
