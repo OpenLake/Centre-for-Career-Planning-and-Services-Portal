@@ -129,11 +129,7 @@ const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 export const jobRelevanceScoreUpvote = async (req, res) => {
     try {
         const { id } = req.params;
-        const userId = req.body.userId; // user ID from request
-
-        if (!isValidObjectId(userId)) {
-            return res.status(400).json({ message: 'Invalid user ID' });
-        }
+        const userId = req.userId;
 
         const jobPosting = await JobPosting.findById(id);
         if (!jobPosting) {
@@ -145,12 +141,12 @@ export const jobRelevanceScoreUpvote = async (req, res) => {
         jobPosting.upvotedBy = jobPosting.upvotedBy || [];
         jobPosting.downvotedBy = jobPosting.downvotedBy || [];
 
-        if (jobPosting.upvotedBy.includes(userId)) {
+        if (jobPosting.upvotedBy.some(voterId => voterId.toString() === userId.toString())) {
             return res.status(400).json({ message: 'Already upvoted' });
         }
 
         // Switch vote if previously downvoted
-        if (jobPosting.downvotedBy.includes(userId)) {
+        if (jobPosting.downvotedBy.some(voterId => voterId.toString() === userId.toString())) {
             jobPosting.downvotedBy.pull(userId);
             jobPosting.upvotedBy.push(userId);
             jobPosting.relevanceScore += 2;
@@ -182,11 +178,7 @@ export const jobRelevanceScoreUpvote = async (req, res) => {
 export const jobRelevanceScoreDownvote = async (req, res) => {
     try {
         const { id } = req.params;
-        const userId = req.body.userId; // user ID from request
-
-        if (!isValidObjectId(userId)) {
-            return res.status(400).json({ message: 'Invalid user ID' });
-        }
+        const userId = req.userId;
 
         const jobPosting = await JobPosting.findById(id);
         if (!jobPosting) {
@@ -198,12 +190,12 @@ export const jobRelevanceScoreDownvote = async (req, res) => {
         jobPosting.upvotedBy = jobPosting.upvotedBy || [];
         jobPosting.downvotedBy = jobPosting.downvotedBy || [];
 
-        if (jobPosting.downvotedBy.includes(userId)) {
+        if (jobPosting.downvotedBy.some(voterId => voterId.toString() === userId.toString())) {
             return res.status(400).json({ message: 'Already downvoted' });
         }
 
         // Switch vote if previously upvoted
-        if (jobPosting.upvotedBy.includes(userId)) {
+        if (jobPosting.upvotedBy.some(voterId => voterId.toString() === userId.toString())) {
             jobPosting.upvotedBy.pull(userId);
             jobPosting.downvotedBy.push(userId);
             jobPosting.relevanceScore -= 2;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '../context/AuthContext';
 
 const JobCard = ({ job, myApps, openApplyModal, handleSaveJob, isAppliedJob }) => {
@@ -14,7 +14,15 @@ const JobCard = ({ job, myApps, openApplyModal, handleSaveJob, isAppliedJob }) =
             
     const [voteStatus, setVoteStatus] = useState(initialVoteStatus);
 
+    useEffect(() => {
+        setVoteStatus(initialVoteStatus);
+    }, [initialVoteStatus]);
+
     const handleUpvote = async () => {
+        if (!authUser) {
+            alert("Please login to vote");
+            return;
+        }
         const token = localStorage.getItem("ccps-token");
         try {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/jobs/upvote/${job._id}`, {
@@ -38,6 +46,10 @@ const JobCard = ({ job, myApps, openApplyModal, handleSaveJob, isAppliedJob }) =
     };
 
     const handleDownvote = async () => {
+        if (!authUser) {
+            alert("Please login to vote");
+            return;
+        }
         const token = localStorage.getItem("ccps-token");
         try {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/jobs/downvote/${job._id}`, {
