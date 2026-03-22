@@ -20,7 +20,7 @@ const Sidebar = () => {
 
   const navItems = (
     <>
-      <NavLink to="/" className={navLinkClass}>
+      <NavLink to="/home" className={navLinkClass}>
         Home
       </NavLink>
       <NavLink to="/analytics" className={navLinkClass}>
