@@ -8,9 +8,6 @@ on:
   pull_request:
     branches: [main, master, develop]
     types: [opened, synchronize, reopened]
-  push:
-    branches: [main, master]
-    # Only run on main for status checks, never auto-merge without PR review
 
 # Prevent multiple concurrent workflows on same PR
 concurrency:
@@ -22,7 +19,7 @@ jobs:
   # SECURITY SCANNING
   # ==============================
   security:
-    name: 🔒 Security Scan
+    name: Security Scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -42,21 +39,29 @@ jobs:
             pip install safety
             safety check -r requirements.txt --json || true
           fi
-          # Node.js
-          if [ -f "package.json" ]; then
+          # Node.js - check for package-lock.json (needed for npm audit)
+          if [ -f "package-lock.json" ]; then
             npm audit --production || true
           fi
+          # Also check subdirectories for package-lock.json
+          for dir in frontend backend; do
+            if [ -f "${dir}/package-lock.json" ]; then
+              cd "${dir}"
+              npm audit --production || true
+              cd ..
+            fi
+          done
           # Go
           if [ -f "go.mod" ]; then
-            go list -m -json all | govulncheck || true
+            go install golang.org/x/vuln/cmd/govulncheck@latest
+            govulncheck ./...
           fi
-        continue-on-error: true
 
   # ==============================
   # CODE QUALITY
   # ==============================
   code-quality:
-    name: 🧹 Code Quality
+    name: Code Quality
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -70,11 +75,20 @@ jobs:
             black --check . || echo "Python formatting issues found"
             isort --check-only . || echo "Python import sorting issues found"
           fi
-          # Node.js
+          # Node.js - root level
           if [ -f "package.json" ]; then
             npm ci || npm install
-            npm run lint || echo "ESLint issues found (non-blocking)"
+            npm run lint 2>/dev/null || echo "No lint script at root"
           fi
+          # Node.js - subdirectories (frontend, backend, etc.)
+          for dir in frontend backend; do
+            if [ -f "${dir}/package.json" ]; then
+              cd "${dir}"
+              npm ci || npm install
+              npm run lint || echo "ESLint issues found in ${dir}"
+              cd ..
+            fi
+          done
           # Go
           if [ -f "go.mod" ]; then
             go fmt ./...
@@ -101,7 +115,7 @@ jobs:
   # BUILD & TEST
   # ==============================
   build-test:
-    name: 🔨 Build & Test
+    name: Build & Test
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -124,38 +138,74 @@ jobs:
       - name: Install Python dependencies
         if: hashFiles('requirements.txt') != '' || hashFiles('setup.py') != '' || hashFiles('pyproject.toml') != ''
         run: |
-          pip install -r requirements.txt || true
-          pip install pytest pytest-cov || true
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          elif [ -f "pyproject.toml" ]; then
+            pip install .
+          elif [ -f "setup.py" ]; then
+            pip install .
+          fi
+          pip install pytest pytest-cov
 
       - name: Run Python tests
         if: hashFiles('requirements.txt') != '' || hashFiles('setup.py') != '' || hashFiles('pyproject.toml') != ''
         run: |
-          pytest --cov=. --cov-report=xml || echo "Tests failed or none found"
-        continue-on-error: true
+          pytest --cov=. --cov-report=xml
 
       # ==========================
       # Node.js
       # ==========================
       - name: Setup Node.js
-        if: hashFiles('package.json') != ''
+        if: hashFiles('package.json') != '' || hashFiles('frontend/package.json') != '' || hashFiles('backend/package.json') != ''
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install Node dependencies
+      - name: Install Node dependencies (root)
         if: hashFiles('package.json') != ''
         run: npm ci || npm install
 
+      - name: Install Node dependencies (subdirectories)
+        run: |
+          for dir in frontend backend; do
+            if [ -f "${dir}/package.json" ]; then
+              cd "${dir}"
+              npm ci || npm install
+              cd ..
+            fi
+          done
+
       - name: Run Node.js tests
-        if: hashFiles('package.json') != ''
-        run: npm test || echo "Tests failed or none found"
-        continue-on-error: true
+        run: |
+          # Root
+          if [ -f "package.json" ] && node -e "try { require('./package.json').scripts.test } catch(e) { process.exit(1) }" 2>/dev/null; then
+            npm test
+          fi
+          # Subdirectories
+          for dir in frontend backend; do
+            if [ -f "${dir}/package.json" ] && node -e "try { require('./${dir}/package.json').scripts.test } catch(e) { process.exit(1) }" 2>/dev/null; then
+              cd "${dir}"
+              npm test
+              cd ..
+            fi
+          done
+          echo "No test scripts found (non-fatal for repos without tests)"
 
       - name: Build check
-        if: hashFiles('package.json') != ''
-        run: npm run build || echo "Build failed or no build script"
-        continue-on-error: true
+        run: |
+          # Subdirectories first (frontend/backend typically have build scripts)
+          for dir in frontend backend; do
+            if [ -f "${dir}/package.json" ]; then
+              cd "${dir}"
+              npm run build || echo "Build failed in ${dir}"
+              cd ..
+            fi
+          done
+          # Root
+          if [ -f "package.json" ] && node -e "try { require('./package.json').scripts.build } catch(e) { process.exit(1) }" 2>/dev/null; then
+            npm run build
+          fi
 
       # ==========================
       # Go
@@ -174,13 +224,11 @@ jobs:
       - name: Run Go tests
         if: hashFiles('go.mod') != ''
         run: |
-          go test -v -coverprofile=coverage.out ./... || echo "Go tests failed or none found"
-        continue-on-error: true
+          go test -v -coverprofile=coverage.out ./...
 
       - name: Build Go binary
         if: hashFiles('go.mod') != ''
-        run: go build -v ./... || echo "Go build failed"
-        continue-on-error: true
+        run: go build -v ./...
 
       # ==========================
       # Rust
@@ -191,13 +239,11 @@ jobs:
 
       - name: Run Rust tests
         if: hashFiles('Cargo.toml') != ''
-        run: cargo test || echo "Rust tests failed or none found"
-        continue-on-error: true
+        run: cargo test
 
       - name: Build Rust binary
         if: hashFiles('Cargo.toml') != ''
-        run: cargo build || echo "Rust build failed"
-        continue-on-error: true
+        run: cargo build
 
       # ==========================
       # Flutter
@@ -216,12 +262,34 @@ jobs:
 
       - name: Run Flutter tests
         if: hashFiles('pubspec.yaml') != ''
-        run: flutter test || echo "Flutter tests failed or none found"
-        continue-on-error: true
+        run: flutter test
 
       - name: Analyze Flutter code
         if: hashFiles('pubspec.yaml') != ''
-        run: flutter analyze || echo "Flutter analysis issues found"
-        continue-on-error: true
+        run: flutter analyze
 
   # ==============================
+  # PR STATUS COMMENT
+  # ==============================
+  comment-status:
+    name: Comment CI Status
+    if: github.event_name == 'pull_request'
+    needs: [security, code-quality, build-test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post status summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = [
+              '## OpenLake CI Result',
+              `- Security: **${{ needs.security.result }}**`,
+              `- Code Quality: **${{ needs['code-quality'].result }}**`,
+              `- Build & Test: **${{ needs['build-test'].result }}**`
+            ].join('\n');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
