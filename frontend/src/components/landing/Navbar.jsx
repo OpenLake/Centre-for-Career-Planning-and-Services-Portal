@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
   const navLinks = [
     { name: 'Overview', href: '#overview' },
     { name: 'Why Recruit', href: '#why-recruit' },
@@ -31,12 +33,35 @@ const Navbar = () => {
               </a>
             ))}
           </div>
-          <div className="md:hidden text-emerald-900 cursor-pointer">
+          <button
+            onClick={() => setIsOpen((v) => !v)}
+            aria-label={isOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isOpen}
+            className="md:hidden text-emerald-900 cursor-pointer"
+          >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d={isOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16m-7 6h7'}
+              />
             </svg>
-          </div>
+          </button>
         </div>
+        {isOpen && (
+          <div className="md:hidden border-t border-gray-100 py-2 space-y-1" onClick={() => setIsOpen(false)}>
+            {navLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                className="block py-2 text-gray-700 hover:text-emerald-900 font-medium transition-colors duration-200"
+              >
+                {link.name}
+              </a>
+            ))}
+          </div>
+        )}
       </div>
     </nav>
   );

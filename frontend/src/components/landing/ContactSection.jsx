@@ -19,20 +19,26 @@ const ContactSection = () => {
 
   const studentCoordinators = [
     {
-      name: 'Teesha Ramchandani',
+      name: 'Rahat Imran',
       role: 'UG Placement Coordinator',
-      phone: '8839481594',
-      email: 'teeshar@iitbhilai.ac.in',
+      phone: '8294927257',
+      email: 'rahati@iitbhilai.ac.in',
     },
     {
-      name: 'Chinmay Bakhale',
+      name: 'Rudra Dudhat',
+      role: 'UG Placement Coordinator',
+      phone: '9326110119',
+      email: 'rudramd@iitbhilai.ac.in',
+    },
+    {
+      name: 'Chitneedi Satya',
       role: 'PG Placement Coordinator',
-      phone: '7588458856',
-      email: 'chinmaybakh@iitbhilai.ac.in',
+      phone: '7702959666',
+      email: 'chitneedisatya@iitbhilai.ac.in',
     },
     {
       name: 'Aditya Jha',
-      role: 'Internship Coordinator',
+      role: 'Mentor',
       phone: '7439879074',
       email: 'adityaj@iitbhilai.ac.in',
     },

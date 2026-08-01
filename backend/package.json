@@ -12,6 +12,7 @@
   "author": "OPENLAKE",
   "license": "ISC",
   "dependencies": {
+    "@getbrevo/brevo": "^5.0.4",
     "axios": "^1.13.5",
     "bcryptjs": "^3.0.0",
     "cloudinary": "^2.7.0",
@@ -26,6 +27,7 @@
     "nodemailer": "^6.10.1",
     "nodemon": "^3.1.4",
     "pdfkit": "^0.16.0",
+    "resend": "^6.12.4",
     "zod": "^4.3.6"
   },
   "devDependencies": {

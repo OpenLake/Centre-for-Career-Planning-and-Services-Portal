@@ -1,25 +1,25 @@
-import dotenv from "dotenv";
-dotenv.config({});
+import dotenv from 'dotenv';
+dotenv.config();
 
-import nodemailer from 'nodemailer'
+const sendBrevoEmail = async ({ to, subject, htmlContent }) => {
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+            'accept': 'application/json',
+            'api-key': process.env.BREVO_API_KEY,
+            'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+            sender: { email: "kansal.akshat757@gmail.com", name: "CCPS Portal" },
+            to: [{ email: to }],
+            subject,
+            htmlContent,
+        }),
+    });
 
-const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",//"smtp-relay.brevo.com"
-    port: 587,
-    secure: false, // true for port 465, false for other ports
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD,
-    },
-});
+    const data = await response.json();
+    if (!response.ok) throw new Error(JSON.stringify(data));
+    return data;
+};
 
-transporter.verify(function (error, success) {
-    if (error) {
-        console.error("SMTP connection failed:", error);
-    } else {
-        console.log("SMTP server is ready to take our messages");
-    }
-});
-
-
-export default transporter;
+export default sendBrevoEmail;

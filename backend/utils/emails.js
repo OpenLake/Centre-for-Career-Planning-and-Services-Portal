@@ -1,22 +1,16 @@
 import dotenv from "dotenv";
-dotenv.config({});
-
+dotenv.config();
+import sendBrevoEmail from "../config/nodemailer.js";
 import { PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE } from "../assets/emailTemplates.js";
-import transporter from "../config/nodemailer.js";
 
 const sendVerificationEmail = async (email, verificationToken) => {
     try {
-        const mailOptions = {
-            from: process.env.SMTP_SENDER_EMAIL,
+        await sendBrevoEmail({
             to: email,
-            subject: 'Verify Your Email',
-            html: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", verificationToken),
-        }
-
-        const response = await transporter.sendMail(mailOptions);
-        console.log("Verification code sent successfully");
-        console.log(verificationToken);
-        
+            subject: "Verify Your Email",
+            htmlContent: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", verificationToken),
+        });
+        console.log("Verification email sent successfully");
     } catch (error) {
         console.error("Error sending verification email:", error.message);
     }
@@ -24,17 +18,12 @@ const sendVerificationEmail = async (email, verificationToken) => {
 
 const sendPasswordResetEmail = async (email, resetURL) => {
     try {
-        // console.log("email",email)
-        const mailOptions = {
-            from: process.env.SMTP_SENDER_EMAIL,
+        await sendBrevoEmail({
             to: email,
-            subject: 'Reset your password',
-            html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL),
-        }
-
-        const response = await transporter.sendMail(mailOptions);
-        console.log("Password reset email sent successfully", response);
-
+            subject: "Reset your password",
+            htmlContent: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL),
+        });
+        console.log("Password reset email sent successfully");
     } catch (error) {
         console.error("Error sending password reset email:", error.message);
     }
@@ -42,35 +31,24 @@ const sendPasswordResetEmail = async (email, resetURL) => {
 
 const sendPasswordResetSuccessEmail = async (email) => {
     try {
-        const mailOptions = {
-            from: process.env.SMTP_SENDER_EMAIL,
+        await sendBrevoEmail({
             to: email,
-            subject: 'Password Reset Successful',
-            html: PASSWORD_RESET_SUCCESS_TEMPLATE,
-        }
-
-        const response = await transporter.sendMail(mailOptions);
-        console.log("Password reset success email sent successfully", response);
-
+            subject: "Password Reset Successful",
+            htmlContent: PASSWORD_RESET_SUCCESS_TEMPLATE,
+        });
+        console.log("Password reset success email sent successfully");
     } catch (error) {
-        console.error("Error sending password reset email:", error.message);
+        console.error("Error sending password reset success email:", error.message);
     }
 }
 
 const sendEmail = async ({ to, subject, html }) => {
-  try {
-    const info = await transporter.sendMail({
-      from: `"CCPS Portal" <${process.env.SMTP_SENDER_EMAIL}>`,
-      to,
-      subject,
-      html,
-    });
+    try {
+        await sendBrevoEmail({ to, subject, htmlContent: html });
+        console.log("Email sent successfully");
+    } catch (error) {
+        console.error("Error sending email:", error.message);
+    }
+}
 
-    console.log("Email sent:", info.response);
-  } catch (error) {
-    console.error("Error sending email:", error);
-  }
-};
-
-
-export { sendVerificationEmail, sendPasswordResetEmail, sendPasswordResetSuccessEmail, sendEmail};
+export { sendVerificationEmail, sendPasswordResetEmail, sendPasswordResetSuccessEmail, sendEmail };
